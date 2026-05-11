@@ -1,8 +1,10 @@
 /**
 * @type {import('vite').UserConfig}
 */
+const repositoryName = process.env.GITHUB_REPOSITORY?.split('/')[1];
+
 export default {
-  base: '/minecraft-threejs-clone/',
+  base: repositoryName ? `/${repositoryName}/` : '/',
   build: {
     sourcemap: true
   }
