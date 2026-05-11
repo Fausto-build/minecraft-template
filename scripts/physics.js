@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { blocks } from './blocks';
 import { Player } from './player';
 import { WorldChunk } from './worldChunk';
+import { config } from './game-config';
 
 const collisionMaterial = new THREE.MeshBasicMaterial({
   color: 0xff0000,
@@ -15,10 +16,10 @@ const contactGeometry = new THREE.SphereGeometry(0.05, 6, 6);
 
 export class Physics {
   // Acceleration due to gravity
-  gravity = 32;
+  gravity = config.physics.gravity;
 
   // Physic simulation rate
-  simulationRate = 250;
+  simulationRate = config.physics.simulationRate;
   stepSize = 1 / this.simulationRate;
   // Accumulator to keep track of leftover dt
   accumulator = 0;

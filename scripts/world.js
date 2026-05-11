@@ -1,13 +1,14 @@
 import * as THREE from 'three';
 import { WorldChunk } from './worldChunk';
 import { DataStore } from './dataStore';
+import { config } from './game-config';
 
 export class World extends THREE.Group {
 
   /**
    * Whether or not we want to load the chunks asynchronously
    */
-  asyncLoading = true;
+  asyncLoading = config.world.asyncLoading;
 
   /**
   * The number of chunks to render around the player.
@@ -16,46 +17,49 @@ export class World extends THREE.Group {
   * the adjacent chunks are rendered; if set to 2, the
   * chunks adjacent to those are rendered, and so on.
   */
-  drawDistance = 3;
+  drawDistance = config.world.drawDistance;
 
+  // Chunk dimensions are intentionally NOT in game-config.js — they are
+  // structural (changing them risks breaking world generation, meshing,
+  // and the save format).
   chunkSize = {
     width: 32,
     height: 32
   };
 
   params = {
-    seed: 0,
+    seed: config.world.seed,
     terrain: {
-      scale: 100,
-      magnitude: 8,
-      offset: 6,
-      waterOffset: 4
+      scale: config.terrain.scale,
+      magnitude: config.terrain.magnitude,
+      offset: config.terrain.offset,
+      waterOffset: config.terrain.waterOffset
     },
     biomes: {
-      scale: 500,
+      scale: config.biomes.scale,
       variation: {
-        amplitude: 0.2,
-        scale: 50
+        amplitude: config.biomes.variationAmplitude,
+        scale: config.biomes.variationScale
       },
-      tundraToTemperate: 0.25,
-      temperateToJungle: 0.5,
-      jungleToDesert: 0.75
+      tundraToTemperate: config.biomes.tundraToTemperate,
+      temperateToJungle: config.biomes.temperateToJungle,
+      jungleToDesert: config.biomes.jungleToDesert
     },
     trees: {
       trunk: {
-        minHeight: 4,
-        maxHeight: 7
+        minHeight: config.trees.trunkMinHeight,
+        maxHeight: config.trees.trunkMaxHeight
       },
       canopy: {
-        minRadius: 3,
-        maxRadius: 3,
-        density: 0.7 // Vary between 0.0 and 1.0
+        minRadius: config.trees.canopyMinRadius,
+        maxRadius: config.trees.canopyMaxRadius,
+        density: config.trees.canopyDensity
       },
-      frequency: 0.005
+      frequency: config.trees.frequency
     },
     clouds: {
-      scale: 30,
-      density: 0.3
+      scale: config.clouds.scale,
+      density: config.clouds.density
     }
   };
 
@@ -84,7 +88,7 @@ export class World extends THREE.Group {
     localStorage.setItem('minecraft_params', JSON.stringify(this.params));
     localStorage.setItem('minecraft_data', JSON.stringify(this.dataStore.data));
     document.getElementById('status').innerHTML = 'GAME SAVED';
-    setTimeout(() => document.getElementById('status').innerHTML = '', 3000);
+    setTimeout(() => document.getElementById('status').innerHTML = '', config.ui.statusMessageDuration);
   }
 
   /**
@@ -94,7 +98,7 @@ export class World extends THREE.Group {
     this.params = JSON.parse(localStorage.getItem('minecraft_params'));
     this.dataStore.data = JSON.parse(localStorage.getItem('minecraft_data'));
     document.getElementById('status').innerHTML = 'GAME LOADED';
-    setTimeout(() => document.getElementById('status').innerHTML = '', 3000);
+    setTimeout(() => document.getElementById('status').innerHTML = '', config.ui.statusMessageDuration);
     this.generate();
   }
 

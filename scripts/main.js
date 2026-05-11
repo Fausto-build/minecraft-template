@@ -4,8 +4,8 @@ import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import { World } from './world';
 import { Player } from './player';
 import { Physics } from './physics';
-import { setupUI } from './ui';
 import { ModelLoader } from './modelLoader';
+import { config } from './game-config';
 
 // UI Setup
 const stats = new Stats();
@@ -15,14 +15,14 @@ document.body.appendChild(stats.dom);
 const renderer = new THREE.WebGLRenderer();
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
-renderer.setClearColor(0x80a0e0);
+renderer.setClearColor(config.lighting.skyColor);
 renderer.shadowMap.enabled = true;
 renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 document.body.appendChild(renderer.domElement);
 
 // Scene setup
 const scene = new THREE.Scene();
-scene.fog = new THREE.Fog(0x80a0e0, 50, 75);
+scene.fog = new THREE.Fog(config.fog.color, config.fog.near, config.fog.far);
 
 const world = new World();
 world.generate();
@@ -46,8 +46,12 @@ const modelLoader = new ModelLoader((models) => {
 let sun;
 function setupLights() {
   sun = new THREE.DirectionalLight();
-  sun.intensity = 1.5;
-  sun.position.set(50, 50, 50);
+  sun.intensity = config.lighting.sunIntensity;
+  sun.position.set(
+    config.lighting.sunPosition[0],
+    config.lighting.sunPosition[1],
+    config.lighting.sunPosition[2]
+  );
   sun.castShadow = true;
 
   // Set the size of the sun's shadow box
@@ -56,14 +60,17 @@ function setupLights() {
   sun.shadow.camera.top = 40;
   sun.shadow.camera.bottom = -40;
   sun.shadow.camera.near = 0.1;
-  sun.shadow.camera.far = 200;
+  sun.shadow.camera.far = config.lighting.shadowDistance;
   sun.shadow.bias = -0.0001;
-  sun.shadow.mapSize = new THREE.Vector2(2048, 2048);
+  sun.shadow.mapSize = new THREE.Vector2(
+    config.lighting.shadowMapSize,
+    config.lighting.shadowMapSize
+  );
   scene.add(sun);
   scene.add(sun.target);
 
   const ambient = new THREE.AmbientLight();
-  ambient.intensity = 0.2;
+  ambient.intensity = config.lighting.ambientIntensity;
   scene.add(ambient);
 }
 
@@ -84,7 +91,11 @@ function animate() {
     // Position the sun relative to the player. Need to adjust both the
     // position and target of the sun to keep the same sun angle
     sun.position.copy(player.camera.position);
-    sun.position.sub(new THREE.Vector3(-50, -50, -50));
+    sun.position.add(new THREE.Vector3(
+      config.lighting.sunPosition[0],
+      config.lighting.sunPosition[1],
+      config.lighting.sunPosition[2]
+    ));
     sun.target.position.copy(player.camera.position);
 
     // Update positon of the orbit camera to track player 
@@ -108,6 +119,5 @@ window.addEventListener('resize', () => {
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
-setupUI(world, player, physics, scene);
 setupLights();
 animate();

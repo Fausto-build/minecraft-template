@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { SimplexNoise } from 'three/examples/jsm/math/SimplexNoise.js';
 import { RNG } from './rng';
 import { blocks, resources } from './blocks';
+import { config } from './game-config';
 
 const geometry = new THREE.BoxGeometry();
 
@@ -259,9 +260,9 @@ export class WorldChunk extends THREE.Group {
 
   generateWater() {
     const material = new THREE.MeshLambertMaterial({
-      color: 0x9090e0,
+      color: config.visuals.waterColor,
       transparent: true,
-      opacity: 0.5,
+      opacity: config.visuals.waterOpacity,
       side: THREE.DoubleSide
     });
 
@@ -269,7 +270,7 @@ export class WorldChunk extends THREE.Group {
     waterMesh.rotateX(-Math.PI / 2.0);
     waterMesh.position.set(
       this.size.width / 2,
-      this.params.terrain.waterOffset + 0.4,
+      this.params.terrain.waterOffset + config.visuals.waterHeightOffset,
       this.size.width / 2
     );
     waterMesh.scale.set(this.size.width, this.size.width, 1);

@@ -2,15 +2,16 @@ import * as THREE from 'three';
 import { PointerLockControls } from 'three/addons/controls/PointerLockControls.js';
 import { World } from './world';
 import { blocks } from './blocks';
+import { config } from './game-config';
 
 const CENTER_SCREEN = new THREE.Vector2();
 
 export class Player {
-  height = 1.75;
-  radius = 0.5;
-  maxSpeed = 5;
+  height = config.player.height;
+  radius = config.player.radius;
+  maxSpeed = config.player.maxSpeed;
 
-  jumpSpeed = 10;
+  jumpSpeed = config.player.jumpSpeed;
   sprinting = false;
   onGround = false;
 
@@ -18,12 +19,12 @@ export class Player {
   velocity = new THREE.Vector3();
   #worldVelocity = new THREE.Vector3();
 
-  camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 0.1, 100);
+  camera = new THREE.PerspectiveCamera(config.player.cameraFov, window.innerWidth / window.innerHeight, 0.1, 100);
   cameraHelper = new THREE.CameraHelper(this.camera);
   controls = new PointerLockControls(this.camera, document.body);
   debugCamera = false;
 
-  raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(), 0, 3);
+  raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(), 0, config.player.reachDistance);
   selectedCoords = null;
   activeBlockId = blocks.empty.id;
 
@@ -69,8 +70,8 @@ export class Player {
     // Helper used to highlight the currently active block
     const selectionMaterial = new THREE.MeshBasicMaterial({
       transparent: true,
-      opacity: 0.3,
-      color: 0xffffaa
+      opacity: config.visuals.selectionOpacity,
+      color: config.visuals.selectionColor
     });
     const selectionGeometry = new THREE.BoxGeometry(1.01, 1.01, 1.01);
     this.selectionHelper = new THREE.Mesh(selectionGeometry, selectionMaterial);
@@ -149,8 +150,8 @@ export class Player {
    */
   applyInputs(dt) {
     if (this.controls.isLocked === true) {
-      this.velocity.x = this.input.x * (this.sprinting ? 1.5 : 1);
-      this.velocity.z = this.input.z * (this.sprinting ? 1.5 : 1);
+      this.velocity.x = this.input.x * (this.sprinting ? config.player.sprintMultiplier : 1);
+      this.velocity.z = this.input.z * (this.sprinting ? config.player.sprintMultiplier : 1);
       this.controls.moveRight(this.velocity.x * dt);
       this.controls.moveForward(this.velocity.z * dt);
       this.position.y += this.velocity.y * dt;
@@ -269,7 +270,7 @@ export class Player {
         break;
       case 'KeyR':
         if (this.repeat) break;
-        this.position.y = 32;
+        this.position.y = config.player.respawnHeight;
         this.velocity.set(0, 0, 0);
         break;
       case 'ShiftLeft':

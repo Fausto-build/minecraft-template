@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import { config } from './game-config';
 
 const textureLoader = new THREE.TextureLoader();
 
@@ -57,22 +58,34 @@ export const blocks = {
     id: 3,
     name: 'stone',
     material: new THREE.MeshLambertMaterial({ map: textures.stone }),
-    scale: { x: 30, y: 30, z: 30 },
-    scarcity: 0.8
+    scale: {
+      x: config.resources.stone.scaleX,
+      y: config.resources.stone.scaleY,
+      z: config.resources.stone.scaleZ
+    },
+    scarcity: config.resources.stone.scarcity
   },
   coalOre: {
     id: 4,
     name: 'coal_ore',
     material: new THREE.MeshLambertMaterial({ map: textures.coalOre }),
-    scale: { x: 20, y: 20, z: 20 },
-    scarcity: 0.8
+    scale: {
+      x: config.resources.coal.scaleX,
+      y: config.resources.coal.scaleY,
+      z: config.resources.coal.scaleZ
+    },
+    scarcity: config.resources.coal.scarcity
   },
   ironOre: {
     id: 5,
     name: 'iron_ore',
     material: new THREE.MeshLambertMaterial({ map: textures.ironOre }),
-    scale: { x: 40, y: 40, z: 40 },
-    scarcity: 0.9
+    scale: {
+      x: config.resources.iron.scaleX,
+      y: config.resources.iron.scaleY,
+      z: config.resources.iron.scaleZ
+    },
+    scarcity: config.resources.iron.scarcity
   },
   tree: {
     id: 6,
